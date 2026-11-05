@@ -30,9 +30,37 @@ public class Punteggio {
      * Promette: una partita 0 a 0, non finita, senza vincitore e con la storia vuota.
      */
     public Punteggio(int puntiPerVincere, int scartoMinimo) {
+          if(puntiPerVincere<1 || scartoMinimo<1){
+            throw new IllegalArgumentException("Scarto minimo e punti per vincere devono essere almeno 1");
+        }
         this.puntiPerVincere = puntiPerVincere;
         this.scartoMinimo = scartoMinimo;
         this.storia = new ArrayList<>();
+    }
+    boolean repOK() {
+        if(!(puntiPerVincere>0 && scartoMinimo>0 && storia!=null)){ //controllo che punti storia e scarto abbiamo valori ammessi
+            return false;
+        }
+        int dx=0;
+        int sx=0;
+        for(Lato lato : storia){ 
+            if(lato==null){ // controllo che la storia con contenga valori nulli 
+                return false;
+            }
+            if(lato==Lato.DESTRA){
+                dx++;
+            }
+            else sx++;
+
+        }
+        if(sx!=getPunti(Lato.SINISTRA) || dx!=getPunti(Lato.DESTRA)){ //se i punti della storia non coincidono con quelli registrati l'invariante non è rispettato
+            return false;
+        }  
+        if(isFinita() && dx==sx){
+         //punteggio in parità la partita non può essere finita
+            return false;
+        }
+        return true; // da scrivere
     }
 
     /**
@@ -44,6 +72,9 @@ public class Punteggio {
      *           Se la partita era già finita, non cambia niente.
      */
     public void segnaPunto(Lato chi) {
+        if (chi==null){
+            throw new IllegalArgumentException("Lato nullo");
+        }
         if (!isFinita()){
             storia.add(chi);
         }
@@ -55,6 +86,9 @@ public class Punteggio {
      * Promette: i punti del lato chi. Non cambia niente.
      */
     public int getPunti(Lato chi) {
+        if (chi==null){
+            throw new IllegalArgumentException("Lato nullo");
+        }
        int punti = 0;
        for (Lato l : storia){
             if ( l == chi){
